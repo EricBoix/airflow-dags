@@ -78,7 +78,7 @@ with DAG(
     two_task = PythonOperator(
         task_id="two_task",
         python_callable=assert_zip_binary,
-        executor_config={"KubernetesExecutor": {"image": "circleci/golang:latest"}},
+        executor_config={"KubernetesExecutor": {"image": "circleci/python:latest"}},
     )
 
     # Limit resources on this operator/task with node affinity & tolerations
