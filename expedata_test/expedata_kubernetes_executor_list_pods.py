@@ -21,7 +21,7 @@ args = {
 }
 
 with DAG(
-    dag_id='expedata_example_kubernetes_executor',
+    dag_id='expedata_kubernetes_executor_list_pods',
     default_args=args,
     schedule_interval=None,
     start_date=days_ago(2),
