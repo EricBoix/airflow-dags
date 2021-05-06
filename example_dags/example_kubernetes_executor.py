@@ -26,31 +26,33 @@ from airflow.operators.python import PythonOperator
 from airflow.utils.dates import days_ago
 
 args = {
-    'owner': 'airflow',
+    "owner": "airflow",
 }
 
 with DAG(
-    dag_id='example_kubernetes_executor',
+    dag_id="example_kubernetes_executor",
     default_args=args,
     schedule_interval=None,
     start_date=days_ago(2),
-    tags=['example', 'example2'],
+    tags=["example", "example2"],
 ) as dag:
 
     affinity = {
-        'podAntiAffinity': {
-            'requiredDuringSchedulingIgnoredDuringExecution': [
+        "podAntiAffinity": {
+            "requiredDuringSchedulingIgnoredDuringExecution": [
                 {
-                    'topologyKey': 'kubernetes.io/hostname',
-                    'labelSelector': {
-                        'matchExpressions': [{'key': 'app', 'operator': 'In', 'values': ['airflow']}]
+                    "topologyKey": "kubernetes.io/hostname",
+                    "labelSelector": {
+                        "matchExpressions": [
+                            {"key": "app", "operator": "In", "values": ["airflow"]}
+                        ]
                     },
                 }
             ]
         }
     }
 
-    tolerations = [{'key': 'dedicated', 'operator': 'Equal', 'value': 'airflow'}]
+    tolerations = [{"key": "dedicated", "operator": "Equal", "value": "airflow"}]
 
     def assert_zip_binary():
         """
@@ -69,14 +71,14 @@ with DAG(
     one_task = PythonOperator(
         task_id="one_task",
         python_callable=print_stuff,
-        executor_config={"KubernetesExecutor": {"image": "airflow/ci:latest"}},
+        executor_config={"KubernetesExecutor": {"image": "circleci/python:latest"}},
     )
 
     # Use the zip binary, which is only found in this special docker image
     two_task = PythonOperator(
         task_id="two_task",
         python_callable=assert_zip_binary,
-        executor_config={"KubernetesExecutor": {"image": "airflow/ci_zip:latest"}},
+        executor_config={"KubernetesExecutor": {"image": "circleci/python:latest"}},
     )
 
     # Limit resources on this operator/task with node affinity & tolerations
