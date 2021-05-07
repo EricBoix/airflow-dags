@@ -94,4 +94,4 @@ with DAG(
         executor_config={"KubernetesExecutor": {"labels": {"foo": "bar"}}},
     )
 
-    start_task >> [one_task, two_task, three_task, four_task]
+    start_task >> one_task >> two_task >> three_task >> four_task
