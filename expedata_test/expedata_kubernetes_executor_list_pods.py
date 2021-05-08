@@ -76,14 +76,14 @@ with DAG(
     one_task = PythonOperator(
         task_id="one_task",
         python_callable=check_installed_libraries,
-        executor_config={"KubernetesExecutor": {"image": "airflow/ci:latest"}},
+        executor_config={"KubernetesExecutor": {"image": "2.0.2-python3.8"}},
     )
 
     # Check available libraries in airflow/ci:latest image
     two_task = PythonOperator(
         task_id="two_task",
         python_callable=list_pods,
-        executor_config={"KubernetesExecutor": {"image": "airflow/ci:latest"}},
+        executor_config={"KubernetesExecutor": {"image": "2.0.2-python3.8"}},
     )
 
     # Limit resources on this operator/task with node affinity & tolerations
