@@ -45,7 +45,7 @@ class KubeCloud:
     # https://github.com/kubernetes-client/python/issues/363
     current_namespace = open("/var/run/secrets/kubernetes.io/serviceaccount/namespace").read()
     print("CURRENT NAMESPACE:", current_namespace
-    pods = kube_client.list_namespaced_pod(current_namespace).items
+    pods = self._corev1.list_namespaced_pod(current_namespace).items
     print('Listing pods with their IPs:')
     for pod in pods:
       print("%s\t%s\t%s" % (pod.status.pod_ip,
