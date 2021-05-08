@@ -8,12 +8,15 @@
 """
 This is an example dag for using the Kubernetes Executor.
 """
-import os
-
 from airflow import DAG
 from airflow.example_dags.libs.helper import print_stuff
 from airflow.operators.python import PythonOperator
 from airflow.utils.dates import days_ago
+
+import os
+import sys
+# Otherwise the importation of with_kubernetes.py fails with ModuleNotFoundError
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from with_kubernetes import KubeCloud
 
 args = {
