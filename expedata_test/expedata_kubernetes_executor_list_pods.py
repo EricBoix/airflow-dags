@@ -48,16 +48,15 @@ with DAG(
 
     def check_installed_libraries():
         """
-        Checks which libraries are installed
+        Checks whether required libraries are installed
         :raises SystemError: when some lib is not found
         """
-        local_dir= os.path.dirname(os.path.abspath(__file__))
-        print("expedata_kubernetes_executor_list_pods.py: ", local_dir)
-        print(os.listdir(local_dir))
         try:
           import kubernetes
         except:
             raise SystemError("Kubernetes library not found")
+        print("Kubernetes python wrappers available.")
+        return True
 
     def list_pods():
         """
@@ -69,7 +68,7 @@ with DAG(
         k.print_pods()
 
     # You don't have to use any special KubernetesExecutor configuration if
-    # you don't want to
+    # you don't want/need to
     start_task = PythonOperator(
        task_id="start_task",
        python_callable=print_stuff
@@ -110,4 +109,4 @@ with DAG(
         executor_config={"KubernetesExecutor": {"labels": {"foo": "bar"}}},
     )
 
-    start_task >> [one_task, two_task, three_task, four_task]
+    start_task >> one_task >> two_task >> [ three_task, four_task]

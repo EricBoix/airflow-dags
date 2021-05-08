@@ -33,11 +33,25 @@ class KubeCloud:
     self._corev1 = k8s_client.CoreV1Api(self._api_client)
 
   def print_pods(self):
-    ret = self._corev1.list_pod_for_all_namespaces(watch=False)
-    logging.info('Listing pods with their IPs:')
-    for i in ret.items:
-      print("%s\t%s\t%s" % (i.status.pod_ip, i.metadata.namespace, i.metadata.name))
+    # Will fail with
+    # HTTP response body: {"kind":"Status","apiVersion":"v1","metadata":{},"status":"Failure","message":"pods is forbidden: User \"system:serviceaccount:my-airflow-namespace:my-airflow-cluster\" cannot list resource \"pods\" in API group \"\" at the cluster scope","reason":"Forbidden","details":{"kind":"pods"},"code":403}
+    #
+    # ret = self._corev1.list_pod_for_all_namespaces(watch=False)
+
+    # Kubernetes: How do I get all pods in a namespace using the python api?
+    # https://stackoverflow.com/questions/52329005/kubernetes-how-do-i-get-all-pods-in-a-namespace-using-the-python-api
+
+    # How do I get the current namespace
+    # https://github.com/kubernetes-client/python/issues/363
+    current_namespace = open("/var/run/secrets/kubernetes.io/serviceaccount/namespace").read()
+    print("CURRENT NAMESPACE:", current_namespace
+    pods = kube_client.list_namespaced_pod(current_namespace).items
+    print('Listing pods with their IPs:')
+    for pod in pods:
+      print("%s\t%s\t%s" % (pod.status.pod_ip,
+                            pod.metadata.namespace,
+                            pod.metadata.name))
 
 if __name__ == "__main__":
   k = KubeCloud()
-  k.print_pods()
+  # k.print_pods()
