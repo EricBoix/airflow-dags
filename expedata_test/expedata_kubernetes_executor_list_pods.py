@@ -17,7 +17,7 @@ import os
 import sys
 # Otherwise the importation of with_kubernetes.py fails with ModuleNotFoundError
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from .with_kubernetes import KubeCloud
+#from .with_kubernetes import KubeCloud
 
 args = {
     'owner': 'airflow',
@@ -51,6 +51,9 @@ with DAG(
         Checks which libraries are installed
         :raises SystemError: when some lib is not found
         """
+        local_dir= os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        print("expedata_kubernetes_executor_list_pods.py: ", local_dir)
+        print(os.listdir(local_dir))
         try:
           import kubernetes
         except:
@@ -76,14 +79,14 @@ with DAG(
     one_task = PythonOperator(
         task_id="one_task",
         python_callable=check_installed_libraries,
-        executor_config={"KubernetesExecutor": {"image": "2.0.2-python3.8"}},
+        executor_config={"KubernetesExecutor": {"image": "apache/airflow:2.0.2-python3.8"}},
     )
 
     # Check available libraries in airflow/ci:latest image
     two_task = PythonOperator(
         task_id="two_task",
         python_callable=list_pods,
-        executor_config={"KubernetesExecutor": {"image": "2.0.2-python3.8"}},
+        executor_config={"KubernetesExecutor": {"image": "apache/airflow:2.0.2-python3.8"}},
     )
 
     # Limit resources on this operator/task with node affinity & tolerations
