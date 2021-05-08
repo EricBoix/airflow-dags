@@ -16,8 +16,8 @@ from airflow.utils.dates import days_ago
 import os
 import sys
 # Otherwise the importation of with_kubernetes.py fails with ModuleNotFoundError
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-#from .with_kubernetes import KubeCloud
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from with_kubernetes import KubeCloud
 
 args = {
     'owner': 'airflow',
@@ -51,7 +51,7 @@ with DAG(
         Checks which libraries are installed
         :raises SystemError: when some lib is not found
         """
-        local_dir= os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        local_dir= os.path.dirname(os.path.abspath(__file__))
         print("expedata_kubernetes_executor_list_pods.py: ", local_dir)
         print(os.listdir(local_dir))
         try:
