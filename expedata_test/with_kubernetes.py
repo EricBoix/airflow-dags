@@ -33,18 +33,29 @@ class KubeCloud:
     self._corev1 = k8s_client.CoreV1Api(self._api_client)
 
   def print_pods(self):
-    # Will fail with
-    # HTTP response body: {"kind":"Status","apiVersion":"v1","metadata":{},"status":"Failure","message":"pods is forbidden: User \"system:serviceaccount:my-airflow-namespace:my-airflow-cluster\" cannot list resource \"pods\" in API group \"\" at the cluster scope","reason":"Forbidden","details":{"kind":"pods"},"code":403}
+    # Running
+    #   ret = self._corev1.list_pod_for_all_namespaces(watch=False)
+    # fails with
+    # HTTP response body: {
+    #   "kind":"Status",
+    #   "apiVersion":"v1",
+    #   "metadata":{},
+    #   "status":"Failure",
+    #   "message":"pods is forbidden: User \"system:serviceaccount:my-airflow-namespace:my-airflow-cluster\" cannot list resource \"pods\" in API group \"\" at the cluster scope",
+    #   "reason":"Forbidden",
+    #   "details":{"kind":"pods"},
+    #   "code":403
+    # }
     #
-    # ret = self._corev1.list_pod_for_all_namespaces(watch=False)
 
     # Kubernetes: How do I get all pods in a namespace using the python api?
     # https://stackoverflow.com/questions/52329005/kubernetes-how-do-i-get-all-pods-in-a-namespace-using-the-python-api
 
     # How do I get the current namespace
     # https://github.com/kubernetes-client/python/issues/363
+
+    # FIXME: won't work e.g. on OSX
     current_namespace = open("/var/run/secrets/kubernetes.io/serviceaccount/namespace").read()
-    print("CURRENT NAMESPACE:", current_namespace)
     pods = self._corev1.list_namespaced_pod(current_namespace).items
     print('Listing pods with their IPs:')
     for pod in pods:
@@ -52,6 +63,21 @@ class KubeCloud:
                             pod.metadata.namespace,
                             pod.metadata.name))
 
+def list_pods():
+  KubeCloud().print_pods()
+
+def check_installed_libraries():
+  """
+  Checks whether required libraries are installed
+  :raises SystemError: when some lib is not found
+  """
+  try:
+    import kubernetes
+  except:
+      raise SystemError("Kubernetes library not found")
+  print("Kubernetes python wrappers available.")
+  return True
+
 if __name__ == "__main__":
   k = KubeCloud()
-  # k.print_pods()
+  # k.print_pods() fails on mac
